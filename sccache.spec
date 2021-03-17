@@ -48,7 +48,14 @@ directory = "vendor"
 EOF
 
 %build
-%cargo_build
+export CARGO_HOME="$(pwd)/.cargo"
+
+cargo -v build \
+%ifarch x32
+	--target x86_64-unknown-linux-gnux32 \
+%endif
+	--release \
+	--frozen
 
 %clean
 rm -rf $RPM_BUILD_ROOT
