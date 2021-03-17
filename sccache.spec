@@ -1,7 +1,7 @@
 Summary:	sccache is ccache with cloud storage
 Name:		sccache
 Version:	0.2.13
-Release:	0.1
+Release:	1
 License:	Apache v2.0
 Group:		Development/Tools
 Source0:	https://github.com/mozilla/sccache/archive/%{version}/%{name}-%{version}.tar.gz
@@ -62,10 +62,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%cargo_install
+export CARGO_HOME="$(pwd)/.cargo"
 
-find $RPM_BUILD_ROOT -name .crates2.json -delete
-rm -rf $RPM_BUILD_ROOT%{_datadir}/cargo/registry
+cargo -vv \
+	install \
+	--frozen \
+	--path . \
+	--root $RPM_BUILD_ROOT%{_prefix}
+
+%{__rm} $RPM_BUILD_ROOT%{_prefix}/.crates.toml
+%{__rm} $RPM_BUILD_ROOT%{_prefix}/.crates2.json
 
 %files
 %defattr(644,root,root,755)
