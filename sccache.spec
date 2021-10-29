@@ -1,18 +1,19 @@
 Summary:	sccache is ccache with cloud storage
 Name:		sccache
-Version:	0.2.13
+Version:	0.2.15
 Release:	1
 License:	Apache v2.0
 Group:		Development/Tools
 Source0:	https://github.com/mozilla/sccache/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	acc81e9b1c7097d4119ad31cd6a845a9
+# Source0-md5:	dcb0cf6686c334df82f0a2b41eae19ab
 # cd sccache-%{version}
 # cargo vendor
 # cd ..
 # tar -cJf sccache-crates-%{version}.tar.xz sccache-%{version}/{vendor,Cargo.lock}
 # ./dropin sccache-crates-%{version}.tar.xz
 Source1:	%{name}-crates-%{version}.tar.xz
-# Source1-md5:	a864c5cf727f15b9e17ab8d328f3c4be
+# Source1-md5:	cac0034c691ba28b575bb955fce1159d
+Patch0:		openssl.patch
 URL:		https://github.com/mozilla/sccache
 BuildRequires:	openssl-devel
 BuildRequires:	rust >= 1.43.0
@@ -23,6 +24,9 @@ BuildRequires:	xz
 ExcludeArch:	s390 s390x ppc ppc64 ppc64le
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+# TODO: this should not be needed
+%define		_debugsource_packages	0
+
 %description
 Sccache is a ccache-like tool. It is used as a compiler wrapper and
 avoids compilation when possible, storing a cache in a remote storage
@@ -31,6 +35,7 @@ Google Cloud Storage (GCS) API.
 
 %prep
 %setup -q -b1
+%patch0 -p1
 
 install -d .cargo
 cat >.cargo/config <<'EOF'
@@ -55,7 +60,7 @@ cargo -v build \
 	--target x86_64-unknown-linux-gnux32 \
 %endif
 	--release \
-	--frozen
+	--offline
 
 %clean
 rm -rf $RPM_BUILD_ROOT
