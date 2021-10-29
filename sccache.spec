@@ -1,7 +1,7 @@
 Summary:	sccache is ccache with cloud storage
 Name:		sccache
 Version:	0.2.15
-Release:	1
+Release:	0.1
 License:	Apache v2.0
 Group:		Development/Tools
 Source0:	https://github.com/mozilla/sccache/archive/%{version}/%{name}-%{version}.tar.gz
