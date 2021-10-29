@@ -54,6 +54,7 @@ EOF
 
 %build
 export CARGO_HOME="$(pwd)/.cargo"
+export PKG_CONFIG_ALLOW_CROSS=1
 
 cargo -v build \
 %ifarch x32
