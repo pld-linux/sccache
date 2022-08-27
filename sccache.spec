@@ -1,7 +1,7 @@
 Summary:	sccache is ccache with cloud storage
 Name:		sccache
 Version:	0.2.15
-Release:	1
+Release:	2
 License:	Apache v2.0
 Group:		Development/Tools
 Source0:	https://github.com/mozilla/sccache/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -15,17 +15,14 @@ Source1:	%{name}-crates-%{version}.tar.xz
 # Source1-md5:	cac0034c691ba28b575bb955fce1159d
 Patch0:		openssl.patch
 URL:		https://github.com/mozilla/sccache
-BuildRequires:	openssl-devel
-BuildRequires:	rust >= 1.43.0
 BuildRequires:	cargo
-BuildRequires:	rust
+BuildRequires:	openssl-devel
+BuildRequires:	rpmbuild(macros) >= 2.004
+BuildRequires:	rust >= 1.43.0
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
-ExcludeArch:	s390 s390x ppc ppc64 ppc64le
+ExclusiveArch:	%{rust_arches}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-# TODO: this should not be needed
-%define		_debugsource_packages	0
 
 %description
 Sccache is a ccache-like tool. It is used as a compiler wrapper and
@@ -54,14 +51,8 @@ EOF
 
 %build
 export CARGO_HOME="$(pwd)/.cargo"
-export PKG_CONFIG_ALLOW_CROSS=1
 
-cargo -v build \
-%ifarch x32
-	--target x86_64-unknown-linux-gnux32 \
-%endif
-	--release \
-	--offline
+%cargo_build
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -70,11 +61,7 @@ rm -rf $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT
 export CARGO_HOME="$(pwd)/.cargo"
 
-cargo -vv \
-	install \
-	--frozen \
-	--path . \
-	--root $RPM_BUILD_ROOT%{_prefix}
+%cargo_install --frozen --root $RPM_BUILD_ROOT%{_prefix} --path $PWD
 
 %{__rm} $RPM_BUILD_ROOT%{_prefix}/.crates.toml
 %{__rm} $RPM_BUILD_ROOT%{_prefix}/.crates2.json
