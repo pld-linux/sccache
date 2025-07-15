@@ -32,7 +32,7 @@ Google Cloud Storage (GCS) API.
 
 %prep
 %setup -q -b1
-%patch0 -p1
+%patch -P0 -p1
 
 install -d .cargo
 cat >.cargo/config <<'EOF'
